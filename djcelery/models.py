@@ -328,7 +328,11 @@ class TaskState(models.Model):
     def save(self, *args, **kwargs):
         if self.eta is not None:
             self.eta = datetime.utcfromtimestamp(mktime(self.eta.timetuple()))
-        super(TaskState, self).save(*args, **kwargs)
+        try:
+            super(TaskState, self).save(*args, **kwargs)
+        except:
+            # Try it again
+            super(TaskState, self).save(*args, **kwargs)
 
     def __unicode__(self):
         name = self.name or 'UNKNOWN'
