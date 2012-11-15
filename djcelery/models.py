@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import time, mktime
 
 from django.core.exceptions import MultipleObjectsReturned, ValidationError
-from django.db import models, connection
+from django.db import models, connection, transaction
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
@@ -330,9 +330,10 @@ class TaskState(models.Model):
             self.eta = datetime.utcfromtimestamp(mktime(self.eta.timetuple()))
         try:
             super(TaskState, self).save(*args, **kwargs)
-        except:
-            # Try it again
-            connection._rollback()
+        except DatabaseError, e:
+            if connection.ops.signals_deadlock(e):
+                transaction.rollback()
+                transaction.set_clean()
             super(TaskState, self).save(*args, **kwargs)
 
     def __unicode__(self):
