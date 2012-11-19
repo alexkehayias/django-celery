@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import time, mktime
 
 from django.core.exceptions import MultipleObjectsReturned, ValidationError
-from django.db import models, connection, transaction
+from django.db import models, connection, transaction, DatabaseError
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
