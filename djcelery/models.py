@@ -331,10 +331,7 @@ class TaskState(models.Model):
         try:
             super(TaskState, self).save(*args, **kwargs)
         except DatabaseError, e:
-            try:
-                super(TaskState, self).save(*args, **kwargs)
-            except:
-                pass
+            pass
 
     def __unicode__(self):
         name = self.name or 'UNKNOWN'
