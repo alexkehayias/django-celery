@@ -331,10 +331,10 @@ class TaskState(models.Model):
         try:
             super(TaskState, self).save(*args, **kwargs)
         except DatabaseError, e:
-            if connection.ops.signals_deadlock(e):
-                transaction.rollback()
-                transaction.set_clean()
-            super(TaskState, self).save(*args, **kwargs)
+            try:
+                super(TaskState, self).save(*args, **kwargs)
+            except:
+                pass
 
     def __unicode__(self):
         name = self.name or 'UNKNOWN'
