@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from time import time
 
-from django.db import transaction
+from django.db import transaction, DatabaseError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -104,6 +104,8 @@ class Camera(Polaroid):
                 return
             obj, created = objects.get_or_create(defaults=defaults, **kwargs)
             return obj
+        except DatabaseError:
+            transaction.rollback()
         else:
             if states.state(state) < states.state(obj.state):
                 keep = Task.merge_rules[states.RECEIVED]
